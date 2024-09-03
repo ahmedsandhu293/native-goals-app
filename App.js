@@ -1,79 +1,92 @@
-import { useState } from 'react';
-import { Button, FlatList, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useState } from "react";
+import { Button, FlatList, StyleSheet, Text, View } from "react-native";
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
+import { StatusBar } from "expo-status-bar";
 
 export default function App() {
-  const [enteredGoalText,setEnteredGoalText] = useState('');
-  const [courseGoals, setCourseGoals] = useState([])
-  function goalInputHandler(enteredText){
-    setEnteredGoalText(enteredText)
+  const [modalIsVisible, setModalIsVisible] = useState(false);
+  const [courseGoals, setCourseGoals] = useState([]);
+
+  function startAddGoalHandler() {
+    setModalIsVisible(true);
   }
 
-  function addGoalHandler(){
-    setCourseGoals(prevState=> [...prevState, {text:enteredGoalText, id:Math.random().toString()}])
+  function endAddGoalHandler() {
+    setModalIsVisible(false);
   }
+
+  function addGoalHandler(enteredGoalText) {
+    setCourseGoals((prevState) => [
+      ...prevState,
+      { text: enteredGoalText, id: Math.random().toString() },
+    ]);
+    endAddGoalHandler();
+  }
+
+  function deleteGoalHanlder(id) {
+    console.log("DELETE");
+    setCourseGoals((prevState) => {
+      return prevState.filter((goal) => goal.id !== id);
+    });
+  }
+
   return (
-    <View style={styles.appContainer}>
-         <View style={styles.inputContainer}> 
-          <TextInput style={styles.textInput} placeholder='Your course goal!' onChangeText={goalInputHandler}/>
-          <Button title='Add Goal' onPress={addGoalHandler}/>
-         </View>
-         <View style={styles.goalContainer}>
-          <FlatList data={courseGoals} alwaysBounceVertical={false} renderItem={(itemData)=>{
-            return(
-            <View style={styles.eachGoalContainer}>
-              <Text style={styles.eachGoalText}>{itemData.item.text}</Text>
-            </View>
-            )
-          }}
-          keyExtractor={(item,index)=>{
-            return item.id
-          }}
+    <>
+      <StatusBar style="light" />
+      <View style={styles.appContainer}>
+        <Button
+          title="Add new goal"
+          color="#007AFF"
+          onPress={startAddGoalHandler}
+        />
+        <View>
+          <Text style={styles.countingContainer}>{`${
+            courseGoals.length
+          } Goals Added ${courseGoals.length > 0 ? "🙂" : "😞"} `}</Text>
+        </View>
+        <GoalInput
+          onAddGoal={addGoalHandler}
+          visible={modalIsVisible}
+          onCancel={endAddGoalHandler}
+        />
+        <View style={styles.goalContainer}>
+          <FlatList
+            data={courseGoals}
+            alwaysBounceVertical={false}
+            renderItem={(itemData) => {
+              return (
+                <GoalItem
+                  text={itemData.item.text}
+                  id={itemData.item.id}
+                  onDeleteItem={deleteGoalHanlder}
+                />
+              );
+            }}
+            keyExtractor={(item, index) => {
+              return item.id;
+            }}
           />
-          
-         </View>
-    </View>
+        </View>
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
- appContainer:{
-  padding:60,
-  paddingHorizontal:16,
-  flex:1,
-  backgroundColor:'#1C1C1E'
- },
- inputContainer:{
-  flexDirection:'row',
-  justifyContent:'space-between',
-  width:"100%",
-  alignItems:'center',
-  marginBottom:24,
-  flex:1,
-  borderBottomWidth:2,
-  borderBottomColor:'white'
- },
- textInput:{
-  borderWidth:2,
-  borderColor:"white",
-  color:'white',
-  fontSize:18,
-  width:'70%',
-  borderRadius:6,
-  marginRight:8,
-  padding:8
- },
- goalContainer:{
-  flex:4
- },
- eachGoalContainer:{
-   backgroundColor:'#007AFF',
-   borderRadius:6,
-   padding:8,
-   margin:8,
-   
- },
- eachGoalText:{
-  color:'white',
-  fontSize:18
- }
+  appContainer: {
+    padding: 60,
+    paddingHorizontal: 16,
+    flex: 1,
+  },
+  goalContainer: {
+    flex: 4,
+  },
+  countingContainer: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
+    marginVertical: 10,
+  },
 });
