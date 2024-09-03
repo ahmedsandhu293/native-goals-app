@@ -30,6 +30,7 @@ const GoalInput = (props) => {
           placeholder="Your course goal!"
           onChangeText={goalInputHandler}
           value={enteredGoalText}
+          placeholderTextColor="#FFFFFF"
         />
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
@@ -57,6 +58,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     flex: 1,
+    paddingHorizontal:16
   },
   image: {
     width: 100,
@@ -68,13 +70,14 @@ const styles = StyleSheet.create({
     borderColor: "white",
     color: "white",
     fontSize: 18,
-    width: "70%",
+    width: "100%",
     borderRadius: 6,
     marginRight: 8,
     padding: 8,
   },
   buttonContainer: {
     flexDirection: "row",
+    marginTop:16
   },
   button: {
     width: "40%",
